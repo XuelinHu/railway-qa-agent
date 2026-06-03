@@ -1,0 +1,14 @@
+/.env
+/.env.*
+!/.env.example
+.venv/
+.playwright-mcp/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+node_modules/
+*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+data/corpus/railway/*.docx

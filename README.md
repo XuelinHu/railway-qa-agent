@@ -1,5 +1,15 @@
 # Railway QA Agent
 
+<p align="center">
+  <img height="20" src="https://img.shields.io/badge/vue-3.5.13-42B883?logo=vuedotjs&amp;logoColor=white" />
+  <img height="20" src="https://img.shields.io/badge/typescript-5.7.2-3178C6?logo=typescript&amp;logoColor=white" />
+  <img height="20" src="https://img.shields.io/badge/fastapi-0.115%2B-009688?logo=fastapi&amp;logoColor=white" />
+  <img height="20" src="https://img.shields.io/badge/sqlalchemy-2.0.40%2B-D71F00?logo=sqlalchemy&amp;logoColor=white" />
+  <img height="20" src="https://img.shields.io/badge/postgresql-used-4169E1?logo=postgresql&amp;logoColor=white" />
+  <img height="20" src="https://img.shields.io/badge/qdrant-1.14%2B-DC244C" />
+  <img height="20" src="https://img.shields.io/badge/docker_compose-configured-2496ED?logo=docker&amp;logoColor=white" />
+</p>
+
 Internationalized bilingual railway support RAG system.
 
 ## Dataset

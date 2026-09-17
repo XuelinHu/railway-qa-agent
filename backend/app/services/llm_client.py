@@ -18,7 +18,11 @@ class LLMClient:
             "temperature": settings.llm_temperature,
         }
 
-        async with httpx.AsyncClient(timeout=settings.llm_timeout_seconds) as client:
+        # See OllamaClient._client: a self-hosted model endpoint must bypass any
+        # ambient proxy configuration, which httpx would otherwise apply eagerly.
+        async with httpx.AsyncClient(
+            timeout=settings.llm_timeout_seconds, trust_env=False
+        ) as client:
             response = await client.post(url, headers=headers, json=payload)
             response.raise_for_status()
             data = response.json()

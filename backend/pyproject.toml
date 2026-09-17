@@ -45,3 +45,7 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+# This project shares a virtualenv with a ROS 2 installation, whose pytest
+# plugins register hooks that only exist for ROS launch tests. Disabling them by
+# name is a no-op on machines where they are absent.
+addopts = "-p no:launch_ros -p no:launch_testing -p no:ament_xmllint -p no:ament_flake8 -p no:ament_pep257 -p no:ament_copyright -p no:ament_lint"

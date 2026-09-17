@@ -12,3 +12,7 @@ node_modules/
 frontend/vite.config.js
 frontend/vite.config.d.ts
 data/corpus/railway/*.docx
+
+# Local runtime artifacts
+data/backups/
+data/tts_cache/

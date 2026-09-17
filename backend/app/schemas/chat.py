@@ -35,6 +35,18 @@ class ChatMessageRead(BaseModel):
     content: str
     language: str
     created_at: datetime
+    message_metadata: dict | None = None
+    citations: list[Citation] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class RetrievalTraceRead(BaseModel):
+    id: UUID
+    message_id: UUID
+    query: str
+    hits: list[dict] = Field(default_factory=list)
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 

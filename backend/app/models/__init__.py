@@ -1,16 +1,31 @@
 from app.models.entities import (
+    AuditLog,
     ChatMessage,
     ChatSession,
+    ModelEvent,
+    PasswordResetRequest,
+    RefreshToken,
     RetrievalTrace,
+    Role,
+    RolePermission,
+    SystemSetting,
     TerminologyEntry,
     User,
+    UserRole,
 )
 
 __all__ = [
+    "AuditLog",
     "ChatMessage",
     "ChatSession",
+    "ModelEvent",
+    "PasswordResetRequest",
+    "RefreshToken",
     "RetrievalTrace",
+    "Role",
+    "RolePermission",
+    "SystemSetting",
     "TerminologyEntry",
     "User",
+    "UserRole",
 ]
-

@@ -126,7 +126,9 @@ async def _stream(
                     messages, on_thinking=pending_thinking.append, config=config
                 ):
                     while pending_thinking:
-                        yield format_event("thinking", {"text": pending_thinking.pop(0)})
+                        thought = pending_thinking.pop(0)
+                        thinking_parts.append(thought)
+                        yield format_event("thinking", {"text": thought})
                     answer_parts.append(chunk)
                     yield format_event("delta", {"text": chunk})
             except LLMUnavailable as exc:

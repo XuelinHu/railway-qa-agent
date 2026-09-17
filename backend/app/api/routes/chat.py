@@ -112,6 +112,9 @@ async def _traces(
 def _to_read(message: ChatMessage, citations: list[Citation] | None) -> ChatMessageRead:
     payload = ChatMessageRead.model_validate(message, from_attributes=True)
     payload.citations = citations or []
+    metadata = message.message_metadata or {}
+    thinking = metadata.get("thinking")
+    payload.thinking = thinking if isinstance(thinking, str) and thinking else None
     return payload
 
 

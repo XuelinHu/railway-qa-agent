@@ -6,7 +6,11 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir .
+# The speech engines are an optional extra: the ASR one pulls in a large native
+# runtime, so it stays out of the default image and the app falls back to the
+# browser's own engines. Build with `--build-arg EXTRAS=speech` to include it.
+ARG EXTRAS=""
+RUN pip install --no-cache-dir ".${EXTRAS:+[$EXTRAS]}"
 
 COPY app ./app
 COPY alembic ./alembic

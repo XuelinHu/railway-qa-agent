@@ -28,12 +28,25 @@ services:
   backend:
     build:
       context: ./backend
+      # `EXTRAS: speech` adds the server-side transcription and synthesis
+      # engines (~1GB of native dependencies). Leave it out to rely on the
+      # browser's own engines instead.
+      args:
+        EXTRAS: ${BACKEND_EXTRAS:-}
     restart: unless-stopped
     env_file:
       - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
       QDRANT_URL: http://qdrant:6333
+      # Ollama runs on the host, not in this compose file — it has to see the
+      # GPU directly. `host.docker.internal` is how the container reaches it.
+      # Deliberately not `${OLLAMA_BASE_URL}`: that variable in .env is the
+      # loopback address used when the backend runs on the host, and inside the
+      # container loopback is the container itself.
+      OLLAMA_BASE_URL: ${DOCKER_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy

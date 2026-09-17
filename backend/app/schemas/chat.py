@@ -39,6 +39,10 @@ class ChatMessageRead(BaseModel):
     created_at: datetime
     message_metadata: dict | None = None
     citations: list[Citation] = Field(default_factory=list)
+    # Reasoning models narrate before they answer. It is stored inside
+    # ``message_metadata``, and lifted out here so a reloaded conversation shows
+    # the same 思考过程 block the live stream produced.
+    thinking: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

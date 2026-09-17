@@ -131,12 +131,12 @@ RAG_VECTOR_ENABLED=true \
 健康检查：
 
 ```bash
-curl http://127.0.0.1:8000/api/health
+curl http://127.0.0.1:8025/api/health
 ```
 
 ### 4. 启动前端
 
-如果 `5173` 被占用，继续用 `5174`：
+如果 `4023` 被占用，继续用 `5174`：
 
 ```bash
 cd frontend
@@ -204,13 +204,13 @@ LLM_MODEL=your-chat-model
 术语接口：
 
 ```bash
-curl 'http://127.0.0.1:8000/api/terminology/search?q=%E7%89%B5%E5%BC%95%E4%BE%9B%E7%94%B5&limit=5'
+curl 'http://127.0.0.1:8025/api/terminology/search?q=%E7%89%B5%E5%BC%95%E4%BE%9B%E7%94%B5&limit=5'
 ```
 
 聊天接口：
 
 ```bash
-curl -s -X POST http://127.0.0.1:8000/api/chat \
+curl -s -X POST http://127.0.0.1:8025/api/chat \
   -H 'Content-Type: application/json' \
   -d '{"message":"牵引供电是什么意思？","language":"auto"}'
 ```

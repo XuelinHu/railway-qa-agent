@@ -81,3 +81,33 @@ Infrastructure:
 ```bash
 docker compose up postgres qdrant
 ```
+
+<!-- codex-runtime-notes:start -->
+
+## Runtime Ports And Database Configuration
+
+### Database
+- Conversation/application database: PostgreSQL.
+- Default database name: `railway_qa_agent`.
+- Default PostgreSQL port: `5432`.
+- Default URL pattern: `postgresql+asyncpg://deipss:<YOUR_PASSWORD>@localhost:5432/railway_qa_agent`.
+- Vector database: Qdrant.
+- Default Qdrant collection: `railway_knowledge`.
+- Default Qdrant ports: HTTP `6333`, gRPC `6334`.
+
+### Default Ports
+- Backend FastAPI service: `8025`.
+- Frontend Vite dev server: `4023`.
+- PostgreSQL: `5432`.
+- Qdrant: `6333` and `6334`.
+
+### Notes
+- Encode special characters in the PostgreSQL password inside `DATABASE_URL`, for example `@` as `%40`.
+
+### Source Files Checked
+- `.env.example`
+- `docker-compose.yml`
+- `backend/app/core/config.py`
+- `frontend/vite.config.ts`
+
+<!-- codex-runtime-notes:end -->

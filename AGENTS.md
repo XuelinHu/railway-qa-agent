@@ -22,8 +22,8 @@
 - Default Qdrant ports: HTTP `6333`, gRPC `6334`.
 
 ### Default Ports
-- Backend FastAPI service: `8000`.
-- Frontend Vite dev server: `5173`.
+- Backend FastAPI service: `8025`.
+- Frontend Vite dev server: `4023`.
 - PostgreSQL: `5432`.
 - Qdrant: `6333` and `6334`.
 

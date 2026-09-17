@@ -32,8 +32,8 @@ class Settings(BaseSettings):
     retrieval_limit: int = 6
 
     cors_origins: list[str] = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
+        "http://localhost:4023",
+        "http://127.0.0.1:4023",
         "http://localhost:4173",
         "http://127.0.0.1:4173",
     ]

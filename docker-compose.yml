@@ -40,7 +40,7 @@ services:
       qdrant:
         condition: service_started
     ports:
-      - "8000:8000"
+      - "8025:8000"
 
   frontend:
     build:
@@ -51,7 +51,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "5173:5173"
+      - "4023:4023"
 
 volumes:
   postgres_data:

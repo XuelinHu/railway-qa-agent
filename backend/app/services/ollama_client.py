@@ -20,6 +20,36 @@ from app.core.config import settings
 #: while a chunk is in flight.
 _PULL_TIMEOUT = httpx.Timeout(connect=10.0, read=None, write=30.0, pool=10.0)
 
+#: Warming or evicting a model answers only once the weights are on the device.
+#: Reading a cold 14B checkpoint off disk takes minutes on a busy host, so the
+#: short discovery timeout is the wrong budget for it.
+_LOAD_TIMEOUT = httpx.Timeout(connect=10.0, read=600.0, write=30.0, pool=10.0)
+
+
+def _describe(exc: Exception) -> str:
+    """A message for a transport failure, never an empty one.
+
+    ``httpx.ReadTimeout`` stringifies to the empty string, which surfaced in the
+    console as an error ending in a bare colon.
+    """
+    return str(exc).strip() or type(exc).__name__
+
+
+def _inference_timeout() -> httpx.Timeout:
+    """Timeout for a request that generates tokens.
+
+    Distinct from the short default used for discovery calls: the read timeout
+    applies between chunks, not to the response as a whole, so it only has to
+    cover the pause before the first token. On a GPU shared with other work that
+    pause can comfortably exceed the 30s a listing call should be allowed.
+    """
+    return httpx.Timeout(
+        connect=10.0,
+        read=settings.llm_stream_timeout_seconds,
+        write=30.0,
+        pool=10.0,
+    )
+
 
 class OllamaError(RuntimeError):
     """Any failure talking to Ollama."""
@@ -66,8 +96,16 @@ class OllamaClient:
         try:
             async with self._client() as client:
                 response = await client.request(method, self._url(path), json=payload)
+        except httpx.TimeoutException as exc:
+            # It connected; it just did not answer in time. Saying "无法连接"
+            # would send an administrator looking at the wrong thing.
+            raise OllamaUnavailable(
+                f"Ollama 响应超时 ({self.base_url}): {_describe(exc)}"
+            ) from exc
         except Exception as exc:  # noqa: BLE001 - any transport failure means "unavailable"
-            raise OllamaUnavailable(f"无法连接 Ollama ({self.base_url}): {exc}") from exc
+            raise OllamaUnavailable(
+                f"无法连接 Ollama ({self.base_url}): {_describe(exc)}"
+            ) from exc
 
         if response.status_code == 404:
             raise OllamaModelNotFound(_detail(response) or "模型不存在")
@@ -111,8 +149,14 @@ class OllamaClient:
                         yield chunk
         except OllamaError:
             raise
+        except httpx.TimeoutException as exc:
+            raise OllamaUnavailable(
+                f"Ollama 响应超时 ({self.base_url}): {_describe(exc)}"
+            ) from exc
         except Exception as exc:  # noqa: BLE001 - any transport failure means "unavailable"
-            raise OllamaUnavailable(f"无法连接 Ollama ({self.base_url}): {exc}") from exc
+            raise OllamaUnavailable(
+                f"无法连接 Ollama ({self.base_url}): {_describe(exc)}"
+            ) from exc
 
     # -- discovery ---------------------------------------------------------
 
@@ -150,6 +194,7 @@ class OllamaClient:
         async for _ in self._stream(
             "/api/generate",
             {"model": name, "prompt": "", "stream": False, "keep_alive": keep_alive},
+            timeout=_LOAD_TIMEOUT,
         ):
             pass
 
@@ -157,6 +202,7 @@ class OllamaClient:
         async for _ in self._stream(
             "/api/generate",
             {"model": name, "prompt": "", "stream": False, "keep_alive": 0},
+            timeout=_LOAD_TIMEOUT,
         ):
             pass
 
@@ -192,7 +238,11 @@ class OllamaClient:
             payload["think"] = think
         if options:
             payload["options"] = options
-        async for chunk in self._stream("/api/chat", payload):
+        # Both modes generate an answer, so both get the inference timeout — a
+        # non-streaming call is just as long, it simply arrives all at once.
+        async for chunk in self._stream(
+            "/api/chat", payload, timeout=_inference_timeout()
+        ):
             yield chunk
 
 

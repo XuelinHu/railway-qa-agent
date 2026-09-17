@@ -39,6 +39,12 @@ export interface ChatMessage {
   created_at: string
   citations?: Citation[]
   pending?: boolean
+  /** Answer still arriving; the bubble shows a caret while true. */
+  streaming?: boolean
+  /** Reasoning text from a thinking model, rendered collapsed. */
+  thinking?: string | null
+  /** Set when generation failed; `content` may still hold a partial answer. */
+  error?: string | null
 }
 
 export interface HealthResponse {

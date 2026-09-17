@@ -15,8 +15,9 @@ Create Date: 2026-09-18
 from collections.abc import Sequence
 
 import sqlalchemy as sa
-from alembic import op
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 revision: str = "0001_baseline"
 down_revision: str | None = None
@@ -59,12 +60,8 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name="pk_terminology_entries"),
     )
-    op.create_index(
-        "ix_terminology_entries_source_term", "terminology_entries", ["source_term"]
-    )
-    op.create_index(
-        "ix_terminology_entries_target_term", "terminology_entries", ["target_term"]
-    )
+    op.create_index("ix_terminology_entries_source_term", "terminology_entries", ["source_term"])
+    op.create_index("ix_terminology_entries_target_term", "terminology_entries", ["target_term"])
     op.create_index(
         "ix_terminology_entries_terms",
         "terminology_entries",

@@ -136,14 +136,19 @@ class LLMClient:
         messages: list[dict[str, str]],
         *,
         on_thinking=None,
+        config: LLMSettings | None = None,
     ) -> AsyncIterator[str]:
         """Yield answer text incrementally.
 
         Raises :class:`LLMUnavailable` rather than degrading silently: a
         streaming caller has already committed to showing a live answer, so it
         needs to know the backend is gone rather than receive an empty stream.
+
+        ``config`` lets a caller that already resolved the settings — and whose
+        database session has since closed, as in the streaming route — pass them
+        in rather than have them re-resolved against the environment.
         """
-        config = await resolve_llm_settings(self.db)
+        config = config or await resolve_llm_settings(self.db)
         if not config.usable:
             raise LLMUnavailable("当前没有可用的模型，请先在管理台加载并选择模型")
 

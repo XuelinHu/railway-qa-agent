@@ -16,7 +16,9 @@ class Citation(BaseModel):
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=8000)
     session_id: UUID | None = None
-    user_id: UUID | None = None
+    #: Ignored. The owner of a conversation is always the authenticated caller,
+    #: so this is only still accepted so older clients keep working.
+    user_id: UUID | None = Field(default=None, deprecated=True)
     language: str | None = Field(default=None, pattern="^(auto|zh|en)$")
 
 

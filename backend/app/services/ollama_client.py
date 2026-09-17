@@ -21,6 +21,22 @@ from app.core.config import settings
 _PULL_TIMEOUT = httpx.Timeout(connect=10.0, read=None, write=30.0, pool=10.0)
 
 
+def _inference_timeout() -> httpx.Timeout:
+    """Timeout for a request that generates tokens.
+
+    Distinct from the short default used for discovery calls: the read timeout
+    applies between chunks, not to the response as a whole, so it only has to
+    cover the pause before the first token. On a GPU shared with other work that
+    pause can comfortably exceed the 30s a listing call should be allowed.
+    """
+    return httpx.Timeout(
+        connect=10.0,
+        read=settings.llm_stream_timeout_seconds,
+        write=30.0,
+        pool=10.0,
+    )
+
+
 class OllamaError(RuntimeError):
     """Any failure talking to Ollama."""
 
@@ -192,7 +208,11 @@ class OllamaClient:
             payload["think"] = think
         if options:
             payload["options"] = options
-        async for chunk in self._stream("/api/chat", payload):
+        # Both modes generate an answer, so both get the inference timeout — a
+        # non-streaming call is just as long, it simply arrives all at once.
+        async for chunk in self._stream(
+            "/api/chat", payload, timeout=_inference_timeout()
+        ):
             yield chunk
 
 

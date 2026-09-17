@@ -12,6 +12,7 @@ from app.api.routes import (
     dashboard,
     health,
     models,
+    speech,
     terminology,
 )
 
@@ -22,6 +23,7 @@ api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
 api_router.include_router(agent.router, prefix="/agent", tags=["agent"])
 api_router.include_router(terminology.router, prefix="/terminology", tags=["terminology"])
 api_router.include_router(models.router, prefix="/models", tags=["models"])
+api_router.include_router(speech.router, prefix="/speech", tags=["speech"])
 
 # Administration console. Every collection endpoint under /admin is paginated.
 api_router.include_router(dashboard.router, prefix="/admin", tags=["admin"])
